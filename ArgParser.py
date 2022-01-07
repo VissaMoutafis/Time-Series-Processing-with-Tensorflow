@@ -1,7 +1,7 @@
 import argparse
 
 #question_num = 1,2,3 according to the arguemnt parser we want for each question
-def create_Parser(question_num):
+def create_hyperparameter_parser(question_num):
 
     parser = argparse.ArgumentParser()
     if question_num == 1 or question_num == 2:
