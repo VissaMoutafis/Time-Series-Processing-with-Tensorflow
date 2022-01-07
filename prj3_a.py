@@ -18,7 +18,7 @@ from ex1_config import *
 
 def main():
     # create the needed parser
-    cmd_args = create_Parser(1)
+    cmd_args = create_hyperparameter_parser(1)
     n_samples = int(cmd_args.n_samples)
     input_dataset_path = cmd_args.dataset_path
     timeseries_df = (
