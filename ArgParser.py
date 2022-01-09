@@ -14,7 +14,7 @@ def create_hyperparameter_parser(question_num):
         parser.add_argument('-b', dest='batch_size', action='store', help="enter batch size")
         #B
         if question_num == 2:
-            parser.add_argument('-mae', dest='dropout_layers', action='store', help="enter dropout layers")
+            parser.add_argument('-mae', dest='mae', action='store', help="enter dropout layers")
     
     if question_num == 3:
         parser.add_argument('-cl', dest='conv_layers', action='store', help="enter convolutional layers")

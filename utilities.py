@@ -35,3 +35,31 @@ def preprocess_timeseries(
         y = np.concatenate((y, y_i)) if y is not None else y_i
 
     return X, y, _max, _min
+    
+def standardize(X, mean, sigma):
+    return (X - mean) / sigma
+
+def reverse_standardize(X, mean, sigma):
+    return X * sigma + mean
+
+def create_dataset(_timeseries, time_steps=1, standardized=False, mean = None, sigma = None):
+    if not standardized:
+      if mean is None:
+        mean = _timeseries.mean()
+      if sigma is None:
+        sigma = _timeseries.std()
+
+      timeseries = standardize(_timeseries, mean, sigma)
+    else:
+      timeseries = _timeseries
+    
+    Xs = None
+    ys = None
+    for i in range(time_steps, len(timeseries)):
+        X_i = np.asarray(timeseries[i - time_steps : i]).reshape((1, len(timeseries[i - time_steps : i]), 1))
+        Xs = np.concatenate((Xs, X_i)) if Xs is not None else X_i
+        y_i = np.asarray(timeseries[i]).reshape((-1, 1))
+        ys = np.concatenate((ys, y_i)) if ys is not None else y_i
+
+
+    return Xs, ys, mean, sigma
