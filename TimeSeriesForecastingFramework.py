@@ -111,9 +111,7 @@ class TimeSeriesForecast:
             # add the eval data in the respective array
             self.eval_data.append((X_test, y_test))
 
-        self.history = self.model.fit(
-            self.X_train_all, self.y_train_all, epochs, batch_size
-        )
+        self.history = self.model.fit(self.X_train_all, self.y_train_all, epochs, batch_size)
 
     def plot_graphs(self, timeseries_idx=None):
         if not self.trained:
