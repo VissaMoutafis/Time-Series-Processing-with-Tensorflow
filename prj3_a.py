@@ -21,15 +21,26 @@ def main():
     cmd_args = create_hyperparameter_parser(1)
     n_samples = int(cmd_args.n_samples)
     input_dataset_path = cmd_args.dataset_path
+
+    # get the timeseries sample in a pandas dataframe
     timeseries_df = (
         pd.read_csv(input_dataset_path, sep="\t", index_col=0, header=None)
         .astype(np.float32)
         .sample(n_samples)
     )
+    # get the indices in a list
     TIME_SERIES_ID = timeseries_df.index.tolist()
+
+    # create the timeseries prediction model
     model = TimeSeriesForecastModel((LOOKBACK, 1), LSTM_LAYERS, dropout=DROPOUT_RATE)
+
+    # initiate a timeseries forcasting framework
     problem = TimeSeriesForecast(model, timeseries_df.to_numpy(), TIME_SERIES_ID)
+
+    # solve the problem
     problem.solve(lookback=LOOKBACK, epochs=EPOCHS)
+
+    # plot graphs based on index of timeseries
     problem.plot_graphs()
 
 

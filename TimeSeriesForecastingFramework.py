@@ -76,7 +76,7 @@ class TimeSeriesForecast:
         self.history = []
         self.trained = False
         self.eval_data = []
-        self.labels = timeseries_labels
+        self.labels = timeseries_labels if timeseries_labels is not None else list(range(len(dataset)))
         self.max = []
         self.min = []
         self.X_train_all = None
@@ -84,7 +84,7 @@ class TimeSeriesForecast:
 
     def solve(self, lookback=4, epochs=100, batch_size=128):
         self.trained = True
-
+        
         for timeseries in self.dataset:
             # preprocess timeseries
             X_normalized, y_normalized, _max, _min = preprocess_timeseries(
@@ -93,10 +93,10 @@ class TimeSeriesForecast:
             self.max.append(_max)
             self.min.append(_min)
 
-            # train the model
-            X_train, X_test, y_train, y_test = train_test_split(
-                X_normalized, y_normalized, test_size=0.33, shuffle=True
-            )
+            # train-test for timeseries
+            train_lim = 5*len(X_normalized)//6
+            X_train, X_test, y_train, y_test = X_normalized[:train_lim], X_normalized[train_lim:], y_normalized[:train_lim], y_normalized[train_lim:]
+            
             self.X_train_all = (
                 X_train
                 if self.X_train_all is None
