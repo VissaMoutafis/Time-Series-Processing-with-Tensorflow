@@ -60,11 +60,12 @@ from utilities import *
 
 
 class LSTMAutoEncoder():
-    def __init__(self, input_dim, lstm_units, dataset, dropout=None, _optimizer='adam', _loss='mse'):
+    def __init__(self, input_dim, lstm_units, dataset, batch_size = 128, dropout=None, _optimizer='adam', _loss='mse'):
         super(LSTMAutoEncoder, self).__init__()
         self.D_train = None
         self.D_test = None
         self.lstm_units = lstm_units
+        self.batch_size =  batch_size
         self.dropout = dropout
         self.optimizer = _optimizer
         self.loss = _loss
@@ -82,20 +83,20 @@ class LSTMAutoEncoder():
         
         self.model = models.Sequential()
         #encoder loop
-        _batch_size = 512
+        _batch_size = self.batch_size
         for i, u in enumerate(self.lstm_units):
           self.model.add(BatchNormalization())
           if i == 0: 
-            encoded = layers.LSTM(units=u, return_sequences=True, input_shape=self.input_dim, batch_input_shape=(_batch_size, input_dim[0], input_dim[-1]))
+            encoded = layers.LSTM(units=u, return_sequences=True, input_shape=self.input_dim, batch_input_shape=(_batch_size, input_dim[0], input_dim[-1]),dropout=self.dropout)
             self.model.add(encoded)
 
           elif i == len(self.lstm_units) - 1:
-            encoded = layers.LSTM(units=u,batch_input_shape=(_batch_size, input_dim[0], input_dim[-1]))
+            encoded = layers.LSTM(units=u,batch_input_shape=(_batch_size, input_dim[0], input_dim[-1]),dropout=self.dropout)
             self.model.add(encoded)
             self.decoded = layers.RepeatVector(input_dim[0])
 
           else: 
-            self.model.add(layers.LSTM(units=u, return_sequences=True,batch_input_shape=(_batch_size, input_dim[0], input_dim[-1])))
+            self.model.add(layers.LSTM(units=u, return_sequences=True,batch_input_shape=(_batch_size, input_dim[0], input_dim[-1]),dropout=self.dropout))
           if self.dropout is not None:
             self.model.add(layers.Dropout(self.dropout))
 
@@ -105,10 +106,10 @@ class LSTMAutoEncoder():
         for i, u in enumerate(self.lstm_units[::-1]):
           self.model.add(BatchNormalization())
           if i == len(self.lstm_units) - 1:
-            encoded = layers.LSTM(units=u,return_sequences=True,batch_input_shape=(_batch_size, input_dim[0], input_dim[-1]))
+            encoded = layers.LSTM(units=u,return_sequences=True,batch_input_shape=(_batch_size, input_dim[0], input_dim[-1]),dropout=self.dropout)
             self.model.add(encoded)
           else: 
-            self.model.add(layers.LSTM(units=u, return_sequences=True,batch_input_shape=(_batch_size, input_dim[0], input_dim[-1])))
+            self.model.add(layers.LSTM(units=u, return_sequences=True,batch_input_shape=(_batch_size, input_dim[0], input_dim[-1]),dropout=self.dropout))
           if self.dropout is not None:
             self.model.add(layers.Dropout(self.dropout))
 
@@ -117,14 +118,14 @@ class LSTMAutoEncoder():
         
         self.model.compile(optimizer='adam', loss=self.loss)
 
-    def fit(self, X, y, epochs=50, batch_size=36):
+    def fit(self, X, y, epochs=15, batch_size=128):
       _history = {}
       X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33)
       _history = self.model.fit(X_train, y_train, validation_data=(X_test, y_test), epochs=epochs, batch_size=batch_size, verbose=1)
     
       return _history
     
-    def solve(self, lookback=20, epochs=50, batch_size=36):
+    def solve(self, lookback=20, epochs=15, batch_size=128):
       self.trained = True
 
       for timeseries in self.dataset:

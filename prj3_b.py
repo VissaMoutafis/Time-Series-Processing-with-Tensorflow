@@ -33,9 +33,9 @@ def main():
     # get the indices in a list
     TIME_SERIES_IDS = timeseries_df.index.tolist()
     # create the timeseries autoencoder model
-    model1 = LSTMAutoEncoder((LOOKBACK, 1),[64, 64,100],timeseries_df.to_numpy(),dropout=0.3)
+    model1 = LSTMAutoEncoder((LOOKBACK, 1),[100, 64,64],timeseries_df.to_numpy(),batch_size = 128, dropout=0.3)
     # initiate adequate framework
-    model1.solve(lookback=LOOKBACK, epochs=50, batch_size = 512)
+    model1.solve(lookback=LOOKBACK, epochs=15, batch_size = 128)
     
     
     X_train_pred = model1.model.predict(model1.X_train_all)
