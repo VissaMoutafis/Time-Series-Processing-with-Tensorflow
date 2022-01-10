@@ -125,7 +125,10 @@ class TimeSeriesComplexityReducerModel():
     
     self.autoencoder.compile(optimizer='adam', loss='mse')
 
-
+  """ 
+    fit the model to the given @X, @y, for @epochs iteration over the dataset, dividing it by @batches subsets. Also applies early training 
+    and returns the history after fitting.
+  """
   def fit(self, X, y, epochs=50, batch_size=128):
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33)
     self.D_train = X_train, y_train
@@ -145,6 +148,9 @@ class TimeSeriesComplexityReducerModel():
   def predict(self, X):
     return self.autoencoder.predict(X)
 
+  """
+    Use the encoder model to reduce the dimensionality of the given input @X
+  """
   def encode(self, X):
     return self.encoder.predict(X)
 
@@ -153,6 +159,12 @@ class TimeSeriesComplexityReducerModel():
 
 
 class TimeSeriesComplexityReducer:
+  """ 
+    Framework to solve the Complexity Reduction problem for timeseries.
+    @model: the model that we will use to solve the model. One easy to use model is the TimeSeriesForecastModel class.
+    @dataset: the timeseries dataset of size [N x C], N = #timeseries, C = complexity of each timeseries
+    @timeseries_labels: labels of each one of them for later plotting, default will be a numeric value index 
+  """
   def __init__(self, model, dataset, timeseries_labels=None):
     self.dataset = dataset
     self.model = model
@@ -165,6 +177,11 @@ class TimeSeriesComplexityReducer:
     self.X_train_all = None
     self.y_train_all = None
 
+  """
+    Use the provided model to fit the problem for given @epochs and @batch_size. 
+    Divide the timeseries into segments and construct a total training dataset to train the model.
+    Keep some of the data per timeseries for evaluation later on.
+  """
   def solve(self, epochs=100, batch_size=128):
     self.trained = True
         
@@ -187,7 +204,9 @@ class TimeSeriesComplexityReducer:
     
     self.history = self.model.fit(self.X_train_all, self.y_train_all, epochs=epochs, batch_size=batch_size)
 
-  
+  """
+    Graph plotting for the visualization of the autoencoder functionality and performance 
+  """
   def plot_graphs(self, timeseries_idx=None):
     if not self.trained:
       raise Exception("Problem not solved")
@@ -219,6 +238,9 @@ class TimeSeriesComplexityReducer:
     plt.legend(lgnd)
     plt.show()
 
+  """ 
+    Divide the @_timeseries to segments of @window size with step of @window
+  """
   def sample_timeseries(self, _timeseries, window):
     _max = _timeseries.min()
     _min = _timeseries.max()
@@ -235,8 +257,14 @@ class TimeSeriesComplexityReducer:
 
     return X, X, _max, _min
 
+
+  """
+    Sample the timeseries and reduce the dimension
+    @timeseries_ndarray : [N x C] array with N timeseries of complexity C
+    @TIMESERIES_IDS: labels for timeseries
+  """
   def reduce_and_export(self, timeseries_ndarray, TIMESERIES_IDS):
-    global idx
+    # helper to reduce the complexity of a timeseries
     def _reduce(timeseries):
       X, y, _max, _min = self.sample_timeseries(timeseries, self.model.input_dim) 
       return self.model.encode(X).reshape(-1)
