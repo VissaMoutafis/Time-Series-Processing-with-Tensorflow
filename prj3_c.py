@@ -37,7 +37,10 @@ def main():
     )
     # get the indices in a list
     train_timeseries_dataset = timeseries_input_df.sample(n_samples)
-    TIME_SERIES_INPUT_ID = train_timeseries_dataset.index.tolist()
+    TIME_SERIES_TRAIN_ID = train_timeseries_dataset.index.tolist()
+
+    TIME_SERIES_INPUT_ID = timeseries_input_df.index.tolist()
+    TIME_SERIES_QUERY_ID = timeseries_query_df.index.tolist()
 
     # create the timeseries prediction model
     autoencoder = TimeSeriesComplexityReducerModel(
@@ -49,7 +52,7 @@ def main():
         verbose=True)
 
     # create the problem statement
-    problem=TimeSeriesComplexityReducer(autoencoder, train_timeseries_dataset.to_numpy(), TIME_SERIES_INPUT_ID)
+    problem=TimeSeriesComplexityReducer(autoencoder, train_timeseries_dataset.to_numpy(), TIME_SERIES_TRAIN_ID)
     
     # solve the problem
     problem.solve(epochs=EPOCHS, batch_size=BATCH_SIZE)
@@ -57,10 +60,10 @@ def main():
 ##############################################################################################################################       
     
     #create compressed input data
-    problem.create_compressed_file(timeseries_input_df.to_numpy(),output_input)
+    problem.create_compressed_file(timeseries_input_df.to_numpy(),TIME_SERIES_INPUT_ID, output_input)
     
     #create compressed query file
-    problem.create_compressed_file(timeseries_query_df.to_numpy(), output_query)
+    problem.create_compressed_file(timeseries_query_df.to_numpy(), TIME_SERIES_QUERY_ID, output_query)
     
 if __name__ == "__main__":
     main()

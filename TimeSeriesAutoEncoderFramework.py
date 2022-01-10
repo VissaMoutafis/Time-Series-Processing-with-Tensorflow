@@ -82,7 +82,7 @@ class LSTMAutoEncoder():
         
         self.model = models.Sequential()
         #encoder loop
-        _batch_size = 36
+        _batch_size = 512
         for i, u in enumerate(self.lstm_units):
           self.model.add(BatchNormalization())
           if i == 0: 
@@ -137,7 +137,6 @@ class LSTMAutoEncoder():
         train_lim = 5*len(X_normalized)//6
         X_train, X_test, y_train, y_test = X_normalized[:train_lim], X_normalized[train_lim:], y_normalized[:train_lim], y_normalized[train_lim:]
           
-        #X_train, X_test, y_train, y_test = train_test_split(X_normalized, y_normalized, test_size=0.33, shuffle=True)
         self.X_train_all = (
           X_train
           if self.X_train_all is None

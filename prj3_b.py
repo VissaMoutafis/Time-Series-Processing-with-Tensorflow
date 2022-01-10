@@ -35,7 +35,7 @@ def main():
     # create the timeseries autoencoder model
     model1 = LSTMAutoEncoder((LOOKBACK, 1),[64, 64,100],timeseries_df.to_numpy(),dropout=0.3)
     # initiate adequate framework
-    model1.solve(lookback=LOOKBACK, epochs=50, batch_size = 36)
+    model1.solve(lookback=LOOKBACK, epochs=50, batch_size = 512)
     
     
     X_train_pred = model1.model.predict(model1.X_train_all)

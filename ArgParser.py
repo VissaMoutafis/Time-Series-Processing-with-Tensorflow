@@ -10,7 +10,7 @@ def create_hyperparameter_parser(question_num):
         
         #B
         if question_num == 2:
-            parser.add_argument('-mae', dest='mae', action='store', required=True, help="enter dropout layers")
+            parser.add_argument('-mae', dest='mae', action='store', required=True, help="enter mean absolute error")
     
     if question_num == 3:
         parser.add_argument('-q', dest='query_set', required=True, help="enter queryset path")
