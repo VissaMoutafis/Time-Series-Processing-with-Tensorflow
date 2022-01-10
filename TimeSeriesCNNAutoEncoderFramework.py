@@ -19,6 +19,18 @@ from utilities import *
 
 class TimeSeriesComplexityReducerModel():
   n_conv_filt_default = 10
+  """ 
+    Model Wrapper for the Complexity reduction problem. Creates the model and init the necessary variables to function.
+    
+    @window_size: the look-back value
+    @conv_layers_settings: a list of dicts that will provide the conv layers with filters and kernel parameters
+    @latent_dim: the dimension that we will project all the [@window_size, 1] vectors
+    @pool_size: size of pooling filters 
+    @_optimizer: the optimizer we use to solve the problem
+    @_loss: the loss function that we trying to fit
+    @dropout_rate: the dropout rate between layers
+    @verbose: verbosity flag
+  """
   def __init__(self, window_size, conv_layers_setting=[], latent_dim=3, pool_size=2, _optimizer='adam', _loss='mse', dropout_rate=None, verbose=False):
     self.verbose=verbose
     self.input_dim = window_size
@@ -56,20 +68,23 @@ class TimeSeriesComplexityReducerModel():
       if self.dropout is not None:
         x = layers.Dropout(self.dropout)(x)
 
-    # final compression
+    # final compression with dense layer and a relu activation
     x = layers.Flatten()(x)
     x = layers.Dense(latent_dim, activation='relu')(x)
     encoded = layers.Reshape((latent_dim, 1))(x)
     
+    # create the encoder model
     self.encoder = models.Model(input_w, encoded, name='encoder')
     if self.verbose:
       self.encoder.summary()    
 
 
-    # decoder model
+    # decoder model architecture
     output_dim = latent_dim 
-
+    
+    # use transpose convolutions to recreate the timeseries
     x = layers.Conv1DTranspose(1, latent_dim, activation='relu', padding="same")(encoded)
+    
     # up sampling
     if output_dim*pool_size <= window_size:
         output_dim = output_dim*pool_size
@@ -81,14 +96,17 @@ class TimeSeriesComplexityReducerModel():
 
     # for all conv layers provided add a reconstructor layer of the input timeseries
     for i, conv_settings in enumerate(conv_layers_setting[::-1]):
+      # parse the semantics from the layer setting given by the user
       padding="same"
       filters = self.n_conv_filt_default
       if 'filters' in conv_settings:
         filters = conv_settings['filters']
       kernel_size = conv_settings['kernel_size']
 
+      # add the transpose convolution
       x = layers.Conv1DTranspose(filters, kernel_size, activation="relu", padding=padding)(x)
       
+      # upscalling if we haven't reached the input dimension just yet      
       if output_dim*pool_size <= window_size:
         output_dim = output_dim*pool_size
         x = layers.UpSampling1D(pool_size)(x)
@@ -96,7 +114,7 @@ class TimeSeriesComplexityReducerModel():
       if self.dropout is not None:
         x = layers.Dropout(self.dropout)(x)
 
-    # decoded = layers.Conv1DTranspose(1, window_size-output_dim+1, activation="sigmoid")(x)
+    # Final activation layer that we use sigmoid activation because we use man mix scalling
     x = layers.Flatten()(x)
     x = layers.Dense(window_size, activation='sigmoid')(x)
     decoded = layers.Reshape((window_size, 1))(x)
