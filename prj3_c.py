@@ -53,9 +53,6 @@ def main():
     
     # solve the problem
     problem.solve(epochs=EPOCHS, batch_size=BATCH_SIZE)
-
-    # plot graphs based on index of timeseries
-    problem.plot_graphs([0])
     
 ##############################################################################################################################       
     
