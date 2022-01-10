@@ -14,13 +14,13 @@ import pandas as pd
 from scipy.sparse import data
 from ArgParser import *
 from TimeSeriesCNNAutoEncoderFramework import *
-from ex1_config import *
+from ex3_config import *
 
 
 def main():
     # create the needed parser
     cmd_args = create_hyperparameter_parser(3)
-    n_samples = 10 #int(cmd_args.n_samples)
+    n_samples = N_TRAINING_SAMPLES
     input_dataset_path = cmd_args.dataset_path
     query_dataset_path = cmd_args.query_set
     output_query = cmd_args.output_query_path
@@ -30,61 +30,40 @@ def main():
     timeseries_input_df = (
         pd.read_csv(input_dataset_path, sep="\t", index_col=0, header=None)
         .astype(np.float32)
-        .sample(n_samples)
     )
     timeseries_query_df = (
         pd.read_csv(query_dataset_path, sep="\t", index_col=0, header=None)
         .astype(np.float32)
-        .sample(n_samples)
     )
     # get the indices in a list
-    TIME_SERIES_INPUT_ID = timeseries_input_df.index.tolist()
-    TIME_SERIES_QUERY_ID = timeseries_query_df.index.tolist()
-    ###########################################CONVERSION OF INPUT FILE###############################################
-    window_length = 10
-    X_all,_, _max, _min = preprocess_timeseries(timeseries_input_df.to_numpy()[0], window_length)
-    X_train, X_test = train_test_split(X_all, test_size=0.33, shuffle=False)
+    train_timeseries_dataset = timeseries_input_df.sample(n_samples)
+    TIME_SERIES_INPUT_ID = train_timeseries_dataset.index.tolist()
 
     # create the timeseries prediction model
-    autoencoder = TimeSeriesComplexityReducerModel(window_length, [{'filters':64, 'kernel_size':7}, {'filters':64, 'kernel_size':7}], latent_dim=7, pool_size=2)
-    test_samples = 50
+    autoencoder = TimeSeriesComplexityReducerModel(
+        LOOKBACK, 
+        CNN_LAYER_SETTINGS, 
+        latent_dim=LATENT_DIM,
+        pool_size=POOL_SIZE, 
+        dropout_rate=DROPOUT_RATE, 
+        verbose=True)
 
-    plot_examples(reverse_normalize(X_all, _max, _min), reverse_normalize(autoencoder.predict(X_all), _max, _min))
-
-    problem=TimeSeriesComplexityReducer(autoencoder, timeseries_input_df.to_numpy(), timeseries_input_df)
+    # create the problem statement
+    problem=TimeSeriesComplexityReducer(autoencoder, train_timeseries_dataset.to_numpy(), TIME_SERIES_INPUT_ID)
     
     # solve the problem
-    problem.solve(epochs=EPOCHS)
+    problem.solve(epochs=EPOCHS, batch_size=BATCH_SIZE)
 
     # plot graphs based on index of timeseries
-    #problem.plot_graphs()
-    
-    ########################################CONVERSION OF QUERY FILE #################################################
-    X_all,_, _max, _min = preprocess_timeseries(timeseries_query_df.to_numpy()[0], window_length)
-    X_train, X_test = train_test_split(X_all, test_size=0.33, shuffle=False)
-
-    # create the timeseries prediction model
-    autoencoder2 = TimeSeriesComplexityReducerModel(window_length, [{'filters':64, 'kernel_size':7}, {'filters':64, 'kernel_size':7}], latent_dim=7, pool_size=2)
-    test_samples = 50
-
-    plot_examples(reverse_normalize(X_all, _max, _min), reverse_normalize(autoencoder2.predict(X_all), _max, _min))
-
-    problem2=TimeSeriesComplexityReducer(autoencoder2, timeseries_query_df.to_numpy(), timeseries_query_df)
-    
-    # solve the problem
-    problem2.solve(epochs=EPOCHS)
-
-    # plot graphs based on index of timeseries
-    #problem2.plot_graphs()   
+    problem.plot_graphs([0])
     
 ##############################################################################################################################       
-    #preparation for question d)
     
     #create compressed input data
-    problem.create_compressed_file(timeseries_input_df.to_numpy(),'input_data.csv')
+    problem.create_compressed_file(timeseries_input_df.to_numpy(),output_input)
     
     #create compressed query file
-    problem2.create_compressed_file(timeseries_query_df.to_numpy(),'query_data.csv')
+    problem.create_compressed_file(timeseries_query_df.to_numpy(), output_query)
     
 if __name__ == "__main__":
     main()

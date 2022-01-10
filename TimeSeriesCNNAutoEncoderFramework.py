@@ -14,8 +14,6 @@ from keras.layers.merge import concatenate
 from math import ceil
 from numpy import savetxt
 
-import seaborn as sns
-sns.set()
 from utilities import *
 
 
@@ -135,17 +133,7 @@ class TimeSeriesComplexityReducerModel():
   def evaluate(self, X, y_true):
     return self.autoencoder.evaluate(X, y_true, batch_size=64)
 
-############################################################################################
-def plot_examples(stock_input, stock_decoded):
-    n = 10  
-    plt.figure(figsize=(20, 4))
-    y_true = [v[0, 0] for v in stock_input[:]] + stock_input[-1, :, :].reshape(-1).tolist()
-    y_pred = [v[0, 0] for v in stock_decoded[:]]+ stock_decoded[-1, :, :].reshape(-1).tolist()
-    print(y_true)
-    plt.plot(range(len(y_true)), y_true, y_pred)
 
-#############################################################################################
-idx = 0
 
 class TimeSeriesComplexityReducer:
   def __init__(self, model, dataset, timeseries_labels=None):
@@ -165,12 +153,11 @@ class TimeSeriesComplexityReducer:
         
     for timeseries in self.dataset:
       # preprocess timeseries
-      X_normalized, y_normalized, _max, _min = preprocess_timeseries(timeseries, self.model.input_dim)
+      X_normalized, y_normalized, _max, _min = preprocess_timeseries(timeseries, self.model.input_dim, _for_='dim_reduction')
       self.max.append(_max)
       self.min.append(_min)
 
       # train-test for timeseries
-      train_lim = 5*len(X_normalized)//6
       X_train, X_test, y_train, y_test = train_test_split(X_normalized, y_normalized, shuffle=False)
             
       self.X_train_all = X_train if self.X_train_all is None else np.concatenate((self.X_train_all, X_train))
