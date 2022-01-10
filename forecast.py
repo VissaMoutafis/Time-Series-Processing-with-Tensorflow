@@ -13,7 +13,7 @@ usage:
 import pandas as pd
 from ArgParser import *
 from TimeSeriesForecastingFramework import *
-from ex1_config import *
+from forecast_config import *
 
 
 def main():
@@ -32,15 +32,15 @@ def main():
     TIME_SERIES_ID = timeseries_df.index.tolist()
 
     # create the timeseries prediction model
-    model = TimeSeriesForecastModel((LOOKBACK, 1), LSTM_LAYERS, dropout=DROPOUT_RATE)
+    model = TimeSeriesForecastModel((LOOKBACK, 1), LSTM_LAYERS, dropout=DROPOUT_RATE, _loss=LOSS)
 
     # initiate a timeseries forcasting framework
     problem = TimeSeriesForecast(model, timeseries_df.to_numpy(), TIME_SERIES_ID)
 
     # solve the problem
-    problem.solve(lookback=LOOKBACK, epochs=EPOCHS)
+    problem.solve(lookback=LOOKBACK, epochs=EPOCHS, batch_size=BATCH_SIZE)
 
-    # plot graphs based on index of timeseries
+    # plot graphs based on index of timeseries (Comment out if you dont care)
     problem.plot_graphs()
 
 
