@@ -145,8 +145,6 @@ def plot_examples(stock_input, stock_decoded):
     plt.plot(range(len(y_true)), y_true, y_pred)
 
 #############################################################################################
-idx = 0
-
 class TimeSeriesComplexityReducer:
   def __init__(self, model, dataset, timeseries_labels=None):
     self.dataset = dataset
@@ -231,7 +229,7 @@ class TimeSeriesComplexityReducer:
 
     return X, X, _max, _min
 
-  def reduce_and_export(self, timeseries_ndarray):
+  def reduce_and_export(self, timeseries_ndarray, TIMESERIES_IDS):
     global idx
     def _reduce(timeseries):
       X, y, _max, _min = self.sample_timeseries(timeseries, self.model.input_dim) 
@@ -239,15 +237,22 @@ class TimeSeriesComplexityReducer:
     
     to_export = np.apply_along_axis(_reduce, 1, timeseries_ndarray)
     id_nums = timeseries_ndarray.shape[0]
-    ids = []
-    for i in range(id_nums):
-      ids.append(idx)
-      idx += 1
     
-    to_export = np.insert(to_export, 0, ids, axis=1)
+    df_export = pd.DataFrame(data=to_export)
     
-    return to_export
+    #add ids to dataframe
+    df_export['id'] = TIMESERIES_IDS[:id_nums]
+    
+    # shift column 'id' to first position
+    first_column = df_export.pop('id')
+    
+    # insert column using insert(position,column_name,
+    # first_column) function
+    df_export.insert(0, 'id', first_column)
+        
+    return df_export
 
-  def create_compressed_file(self,timeseries_ndarray,out_filename='test.out'):
-    data_to_export = self.reduce_and_export(timeseries_ndarray)
-    savetxt(out_filename, data_to_export, delimiter='\t', newline='\r\n')
+  def create_compressed_file(self,timeseries_ndarray,TIMESERIES_IDS,out_filename='test.out'):
+    df_to_export = self.reduce_and_export(timeseries_ndarray,TIMESERIES_IDS)
+    df_to_export.to_csv(out_filename,sep='\t',line_terminator='\r\n',header=False, index=False)
+    #savetxt(out_filename, data_to_export, delimiter='\t', newline='\r\n')

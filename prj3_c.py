@@ -81,10 +81,10 @@ def main():
     #preparation for question d)
     
     #create compressed input data
-    problem.create_compressed_file(timeseries_input_df.to_numpy(),'input_data.csv')
+    problem.create_compressed_file(timeseries_input_df.to_numpy(),TIME_SERIES_INPUT_ID,'input_data.csv')
     
     #create compressed query file
-    problem2.create_compressed_file(timeseries_query_df.to_numpy(),'query_data.csv')
+    problem2.create_compressed_file(timeseries_query_df.to_numpy(),TIME_SERIES_QUERY_ID,'query_data.csv')
     
 if __name__ == "__main__":
     main()
