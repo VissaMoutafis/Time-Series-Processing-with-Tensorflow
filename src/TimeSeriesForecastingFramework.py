@@ -36,7 +36,7 @@ class TimeSeriesForecastModel:
         self.model = models.Sequential()
         for i, u in enumerate(self.lstm_units):
             if i == 0:
-                self.model.add(layers.LSTM(units=u, return_sequences=True, input_shape=self.input_dim, dropout= 0 if self.dropout is None else self.dropout))
+                self.model.add(layers.LSTM(units=u, return_sequences=(len(self.lstm_units) > 1), input_shape=self.input_dim, dropout= 0 if self.dropout is None else self.dropout))
             elif i == len(self.lstm_units) - 1:
                 self.model.add(layers.LSTM(units=u))
             else:

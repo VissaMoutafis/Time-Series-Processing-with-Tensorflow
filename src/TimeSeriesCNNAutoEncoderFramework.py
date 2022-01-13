@@ -14,7 +14,7 @@ from keras.layers.merge import concatenate
 from math import ceil
 from numpy import savetxt
 
-from src.utilities import *
+from utilities import *
 
 
 class TimeSeriesComplexityReducerModel():

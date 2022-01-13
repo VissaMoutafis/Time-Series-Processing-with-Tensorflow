@@ -57,7 +57,8 @@ def main():
     
     # solve the problem
     problem.solve(epochs=EPOCHS, batch_size=BATCH_SIZE)
-
+    problem.plot_graphs([0])
+    
 ##############################################################################################################################       
     
     #create compressed input data
