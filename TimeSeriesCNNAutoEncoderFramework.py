@@ -218,12 +218,12 @@ class TimeSeriesComplexityReducer:
     return X, X, _max, _min
 
   def reduce_and_export(self, timeseries_ndarray, TIMESERIES_IDS):
-    global idx
     def _reduce(timeseries):
       X, y, _max, _min = self.sample_timeseries(timeseries, self.model.input_dim) 
       return self.model.encode(X).reshape(-1)
     
     to_export = np.apply_along_axis(_reduce, 1, timeseries_ndarray)
+    to_export = np.round(to_export,2)
     id_nums = timeseries_ndarray.shape[0]
     
     df_export = pd.DataFrame(data=to_export)
@@ -234,8 +234,7 @@ class TimeSeriesComplexityReducer:
     # shift column 'id' to first position
     first_column = df_export.pop('id')
     
-    # insert column using insert(position,column_name,
-    # first_column) function
+    # insert column using insert(position,column_name,first_column) function
     df_export.insert(0, 'id', first_column)
         
     return df_export
@@ -243,4 +242,3 @@ class TimeSeriesComplexityReducer:
   def create_compressed_file(self,timeseries_ndarray,TIMESERIES_IDS,out_filename='test.out'):
     df_to_export = self.reduce_and_export(timeseries_ndarray,TIMESERIES_IDS)
     df_to_export.to_csv(out_filename,sep='\t',line_terminator='\r\n',header=False, index=False)
-    #savetxt(out_filename, data_to_export, delimiter='\t', newline='\r\n')

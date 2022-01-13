@@ -120,8 +120,9 @@ class LSTMAutoEncoder():
 
     def fit(self, X, y, epochs=15, batch_size=128):
       _history = {}
+      es = EarlyStopping(monitor="val_loss", mode="min", patience=10, min_delta=1e-4)
       X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33)
-      _history = self.model.fit(X_train, y_train, validation_data=(X_test, y_test), epochs=epochs, batch_size=batch_size, verbose=1)
+      _history = self.model.fit(X_train, y_train, validation_data=(X_test, y_test), epochs=epochs, batch_size=batch_size, verbose=1,callbacks=[es],)
     
       return _history
     
