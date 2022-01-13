@@ -49,7 +49,7 @@ import tensorflow as tf
 from tensorflow.keras import layers, models
 from keras.callbacks import EarlyStopping
 
-from utilities import *
+from src.utilities import *
 # input_dataset_path = 'drive/MyDrive/Project-Datasets/nasd_input.csv'
 # query_dataset_path = 'drive/MyDrive/Project-Datasets/nasd_query.csv'
 # DATASET_SIZE = 3
@@ -60,7 +60,7 @@ from utilities import *
 
 
 class LSTMAutoEncoder():
-    def __init__(self, input_dim, lstm_units, dataset, batch_size = 128, dropout=None, _optimizer='adam', _loss='mse'):
+    def __init__(self, input_dim, lstm_units, dataset, batch_size = 128, dropout=None, _optimizer='adam', _loss='mae'):
         super(LSTMAutoEncoder, self).__init__()
         self.D_train = None
         self.D_test = None
@@ -114,7 +114,7 @@ class LSTMAutoEncoder():
             self.model.add(layers.Dropout(self.dropout))
 
         # final output layer
-        self.model.add(layers.TimeDistributed(layers.Dense(units=input_dim[-1], activation="tanh")))
+        self.model.add(layers.TimeDistributed(layers.Dense(units=input_dim[-1])))#, activation="tanh")))
         
         self.model.compile(optimizer='adam', loss=self.loss)
 

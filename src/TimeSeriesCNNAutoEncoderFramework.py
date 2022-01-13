@@ -14,7 +14,7 @@ from keras.layers.merge import concatenate
 from math import ceil
 from numpy import savetxt
 
-from utilities import *
+from src.utilities import *
 
 
 class TimeSeriesComplexityReducerModel():
@@ -31,7 +31,7 @@ class TimeSeriesComplexityReducerModel():
     @dropout_rate: the dropout rate between layers
     @verbose: verbosity flag
   """
-  def __init__(self, window_size, conv_layers_setting=[], latent_dim=3, pool_size=2, _optimizer='adam', _loss='mse', dropout_rate=None, verbose=False):
+  def __init__(self, window_size, conv_layers_setting=[], latent_dim=3, pool_size=2, _optimizer='adam', _loss='bce', dropout_rate=None, verbose=False):
     self.verbose=verbose
     self.input_dim = window_size
     self.latent_dim = latent_dim 
@@ -123,7 +123,7 @@ class TimeSeriesComplexityReducerModel():
     if self.verbose:
       self.autoencoder.summary()
     
-    self.autoencoder.compile(optimizer='adam', loss='mse')
+    self.autoencoder.compile(optimizer=_optimizer, loss=_loss)
 
   """ 
     fit the model to the given @X, @y, for @epochs iteration over the dataset, dividing it by @batches subsets. Also applies early training 

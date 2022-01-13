@@ -1,8 +1,0 @@
-CNN_LAYER_SETTINGS = [{'filters':128, 'kernel_size':10}, {'filters':64, 'kernel_size':3}]
-LATENT_DIM = 3
-LOOKBACK = 15
-DROPOUT_RATE = 0.25
-EPOCHS = 50
-BATCH_SIZE = 1024
-POOL_SIZE = 2
-N_TRAINING_SAMPLES = 10

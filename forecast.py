@@ -8,12 +8,12 @@ Writters:
 Time Series Forecasting using tensorflow lstm models.
 
 usage: 
-  ~$ python prj3_a.py [-h] [-d DATASET_PATH] [-n N_SAMPLES]
+  ~$ python forecast.py [-h] [-d DATASET_PATH] [-n N_SAMPLES]
 """
 import pandas as pd
-from ArgParser import *
-from TimeSeriesForecastingFramework import *
-from forecast_config import *
+from src.ArgParser import *
+from src.TimeSeriesForecastingFramework import *
+from config.forecast_config import *
 
 
 def main():
@@ -23,11 +23,8 @@ def main():
     input_dataset_path = cmd_args.dataset_path
 
     # get the timeseries sample in a pandas dataframe
-    timeseries_df = (
-        pd.read_csv(input_dataset_path, sep="\t", index_col=0, header=None)
-        .astype(np.float32)
-        .sample(n_samples)
-    )
+    timeseries_df = pd.read_csv(input_dataset_path, sep="\t", index_col=0, header=None).astype(np.float32).sample(n_samples)
+        
     # get the indices in a list
     TIME_SERIES_ID = timeseries_df.index.tolist()
 

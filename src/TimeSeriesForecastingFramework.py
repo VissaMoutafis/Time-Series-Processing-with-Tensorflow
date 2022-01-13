@@ -8,7 +8,7 @@ import tensorflow as tf
 from tensorflow.keras import layers, models
 from keras.callbacks import EarlyStopping
 
-from utilities import *
+from src.utilities import *
 
 
 class TimeSeriesForecastModel:
@@ -43,7 +43,7 @@ class TimeSeriesForecastModel:
                 self.model.add(layers.LSTM(units=u, return_sequences=True, dropout= 0 if self.dropout is None else self.dropout))
 
         # final output layer
-        self.model.add(layers.Dense(input_dim[-1], activation='sigmoid'))
+        self.model.add(layers.Dense(input_dim[-1]))
 
         self.model.compile(optimizer=self.optimizer, loss=self.loss)
 
