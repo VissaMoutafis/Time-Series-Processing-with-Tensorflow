@@ -21,7 +21,7 @@ class TimeSeriesForecastModel:
         @_loss : the loss function of the model, default is mse
     """
     def __init__(
-        self, input_dim, lstm_units, dropout=None, _optimizer="adam", _loss="mse"
+        self, input_dim, lstm_units, dropout=None, _optimizer="adam", _loss="mse", trained_model_path = None
     ):
         self.history = None
         self.D_train = None
@@ -31,19 +31,22 @@ class TimeSeriesForecastModel:
         self.optimizer = _optimizer
         self.loss = _loss
         self.input_dim = input_dim
+        
+        if trained_model_path is not None:
+            self.model = models.load_model(trained_model_path)
+        else:
+            # create the model architecture
+            self.model = models.Sequential()
+            for i, u in enumerate(self.lstm_units):
+                if i == 0:
+                    self.model.add(layers.LSTM(units=u, return_sequences=(len(self.lstm_units) > 1), input_shape=self.input_dim, dropout= 0 if self.dropout is None else self.dropout))
+                elif i == len(self.lstm_units) - 1:
+                    self.model.add(layers.LSTM(units=u))
+                else:
+                    self.model.add(layers.LSTM(units=u, return_sequences=True, dropout= 0 if self.dropout is None else self.dropout))
 
-        # create the model architecture
-        self.model = models.Sequential()
-        for i, u in enumerate(self.lstm_units):
-            if i == 0:
-                self.model.add(layers.LSTM(units=u, return_sequences=(len(self.lstm_units) > 1), input_shape=self.input_dim, dropout= 0 if self.dropout is None else self.dropout))
-            elif i == len(self.lstm_units) - 1:
-                self.model.add(layers.LSTM(units=u))
-            else:
-                self.model.add(layers.LSTM(units=u, return_sequences=True, dropout= 0 if self.dropout is None else self.dropout))
-
-        # final output layer
-        self.model.add(layers.Dense(input_dim[-1]))
+            # final output layer
+            self.model.add(layers.Dense(input_dim[-1]))
 
         self.model.compile(optimizer=self.optimizer, loss=self.loss)
 
@@ -74,7 +77,9 @@ class TimeSeriesForecastModel:
         """The evaluate function will print a graph of all"""
         return self.model.evaluate(X, y_true, batch_size=64)
 
-
+    def save_solver(self, path):
+        self.model.save(path)
+    
 class TimeSeriesForecast:
     """ 
         Framework to solve the timeseries prediction problem.
@@ -94,6 +99,38 @@ class TimeSeriesForecast:
         self.X_train_all = None
         self.y_train_all = None
 
+
+    def preprocess_dataset(self, lookback, trained=False):
+        self.trained = trained
+        for timeseries in self.dataset[:]:
+            # preprocess timeseries
+            X_normalized, y_normalized, _max, _min = preprocess_timeseries(
+                timeseries, lookback)
+            self.max.append(_max)
+            self.min.append(_min)
+
+            # train-test for timeseries
+            if not trained:
+                X_train, X_test, y_train, y_test = train_test_split(
+                    X_normalized, y_normalized, shuffle=False)
+
+                # concat the total training dataset
+                self.X_train_all = (
+                    X_train
+                    if self.X_train_all is None
+                    else np.concatenate((self.X_train_all, X_train))
+                )
+                self.y_train_all = (
+                    y_train
+                    if self.y_train_all is None
+                    else np.concatenate((self.y_train_all, y_train))
+                )
+            else:
+                X_test, y_test = X_normalized, y_normalized
+                
+            # add the eval data in the respective array
+            self.eval_data.append((X_test, y_test))
+
     """ 
         Routine to solve the problem of forecasting:
         for each timeseries in the dataset
@@ -108,31 +145,8 @@ class TimeSeriesForecast:
         @batch_size: batch size hyper parameter of model fitting 
     """
     def solve(self, lookback=4, epochs=100, batch_size=128):
-        self.trained = True
-        
-        for timeseries in self.dataset[:]:
-            # preprocess timeseries
-            X_normalized, y_normalized, _max, _min = preprocess_timeseries(timeseries, lookback)
-            self.max.append(_max)
-            self.min.append(_min)
-
-            # train-test for timeseries
-            X_train, X_test, y_train, y_test = train_test_split(X_normalized, y_normalized, shuffle=False)
-            
-            # concat the total training dataset
-            self.X_train_all = (
-                X_train
-                if self.X_train_all is None
-                else np.concatenate((self.X_train_all, X_train))
-            )
-            self.y_train_all = (
-                y_train
-                if self.y_train_all is None
-                else np.concatenate((self.y_train_all, y_train))
-            )
-
-            # add the eval data in the respective array
-            self.eval_data.append((X_test, y_test))
+        self.preprocess_dataset(lookback)
+        self.trained = True        
 
         # train the model given all training data
         self.history = self.model.fit(self.X_train_all, self.y_train_all, epochs, batch_size)

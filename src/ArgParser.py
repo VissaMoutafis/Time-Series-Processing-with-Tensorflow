@@ -5,6 +5,9 @@ def create_hyperparameter_parser(question_num):
 
     parser = argparse.ArgumentParser()
     parser.add_argument('-d', dest='dataset_path', type=str, required=True, help="path to dataset")
+    parser.add_argument('--train', dest='train', action='store_true', help="train the model and save it in a predetermined location.")
+    parser.add_argument('--model-path', dest='model_path', type=str, default='./', help="path to save/load model, if not .")
+    
     if question_num == 1 or question_num == 2:
         parser.add_argument('-n', dest='n_samples', required=True, help="number of timeseries to sample")
         

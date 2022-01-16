@@ -14,7 +14,7 @@ from keras.layers.merge import concatenate
 from math import ceil
 from numpy import savetxt
 
-from utilities import *
+from src.utilities import *
 
 
 class TimeSeriesComplexityReducerModel():
@@ -31,7 +31,7 @@ class TimeSeriesComplexityReducerModel():
     @dropout_rate: the dropout rate between layers
     @verbose: verbosity flag
   """
-  def __init__(self, window_size, conv_layers_setting=[], latent_dim=3, pool_size=2, _optimizer='adam', _loss='bce', dropout_rate=None, verbose=False):
+  def __init__(self, window_size, conv_layers_setting=[], latent_dim=3, pool_size=2, _optimizer='adam', _loss='bce', dropout_rate=None, verbose=False, trained_model_path=None):
     self.verbose=verbose
     self.input_dim = window_size
     self.latent_dim = latent_dim 
@@ -44,86 +44,91 @@ class TimeSeriesComplexityReducerModel():
     self.optimizer = _optimizer
     self.loss = _loss
 
-    # init input layer
-    input_w = layers.Input(shape=(window_size,1))
-    input_dim = window_size
-    x = input_w
+    if trained_model_path is None:
+      # init input layer
+      input_w = layers.Input(shape=(window_size,1))
+      input_dim = window_size
+      x = input_w
 
-    # add the convolution layers
-    for conv_settings in conv_layers_setting:
-      # set up convolution filters and kernel dimensions 
-      filters = self.n_conv_filt_default
-      if 'filters' in conv_settings:
-        filters = conv_settings['filters']
-      kernel_size = conv_settings['kernel_size']
+      # add the convolution layers
+      for conv_settings in conv_layers_setting:
+        # set up convolution filters and kernel dimensions 
+        filters = self.n_conv_filt_default
+        if 'filters' in conv_settings:
+          filters = conv_settings['filters']
+        kernel_size = conv_settings['kernel_size']
 
-      # add the layer into the encoder
-      x = layers.Conv1D(filters, kernel_size, padding="same", activation="relu")(x)
+        # add the layer into the encoder
+        x = layers.Conv1D(filters, kernel_size, padding="same", activation="relu")(x)
+        
+        # downsample if you can
+        if ceil(input_dim/pool_size) > latent_dim:
+          input_dim = ceil(input_dim/pool_size)
+          x = layers.MaxPooling1D(pool_size, padding="same")(x)
+
+        if self.dropout is not None:
+          x = layers.Dropout(self.dropout)(x)
+
+      # final compression with dense layer and a relu activation
+      x = layers.Flatten()(x)
+      x = layers.Dense(latent_dim, activation='relu')(x)
+      encoded = layers.Reshape((latent_dim, 1))(x)
       
-      # downsample if you can
-      if ceil(input_dim/pool_size) > latent_dim:
-        input_dim = ceil(input_dim/pool_size)
-        x = layers.MaxPooling1D(pool_size, padding="same")(x)
-
-      if self.dropout is not None:
-        x = layers.Dropout(self.dropout)(x)
-
-    # final compression with dense layer and a relu activation
-    x = layers.Flatten()(x)
-    x = layers.Dense(latent_dim, activation='relu')(x)
-    encoded = layers.Reshape((latent_dim, 1))(x)
-    
-    # create the encoder model
-    self.encoder = models.Model(input_w, encoded, name='encoder')
-    if self.verbose:
-      self.encoder.summary()    
-
-
-    # decoder model architecture
-    output_dim = latent_dim 
-    
-    # use transpose convolutions to recreate the timeseries
-    x = layers.Conv1DTranspose(1, latent_dim, activation='relu', padding="same")(encoded)
-    
-    # up sampling
-    if output_dim*pool_size <= window_size:
-        output_dim = output_dim*pool_size
-        x = layers.UpSampling1D(pool_size)(x)
-    
-    # add dropout
-    if self.dropout is not None:
-      x = layers.Dropout(self.dropout)(x)
-
-    # for all conv layers provided add a reconstructor layer of the input timeseries
-    for i, conv_settings in enumerate(conv_layers_setting[::-1]):
-      # parse the semantics from the layer setting given by the user
-      padding="same"
-      filters = self.n_conv_filt_default
-      if 'filters' in conv_settings:
-        filters = conv_settings['filters']
-      kernel_size = conv_settings['kernel_size']
-
-      # add the transpose convolution
-      x = layers.Conv1DTranspose(filters, kernel_size, activation="relu", padding=padding)(x)
+      # create the encoder model
+      self.encoder = models.Model(input_w, encoded, name='encoder')
+      if self.verbose:
+        self.encoder.summary()  
+      self.encoder.compile(optimizer=_optimizer, loss=_loss)
+    else:
+      self.encoder = models.load_model(trained_model_path)
       
-      # upscalling if we haven't reached the input dimension just yet      
+
+    if trained_model_path is None:
+      # decoder model architecture
+      output_dim = latent_dim 
+      
+      # use transpose convolutions to recreate the timeseries
+      x = layers.Conv1DTranspose(1, latent_dim, activation='relu', padding="same")(encoded)
+      
+      # up sampling
       if output_dim*pool_size <= window_size:
-        output_dim = output_dim*pool_size
-        x = layers.UpSampling1D(pool_size)(x)
+          output_dim = output_dim*pool_size
+          x = layers.UpSampling1D(pool_size)(x)
       
+      # add dropout
       if self.dropout is not None:
         x = layers.Dropout(self.dropout)(x)
 
-    # Final activation layer that we use sigmoid activation because we use man mix scalling
-    x = layers.Flatten()(x)
-    x = layers.Dense(window_size, activation='sigmoid')(x)
-    decoded = layers.Reshape((window_size, 1))(x)
+      # for all conv layers provided add a reconstructor layer of the input timeseries
+      for i, conv_settings in enumerate(conv_layers_setting[::-1]):
+        # parse the semantics from the layer setting given by the user
+        padding="same"
+        filters = self.n_conv_filt_default
+        if 'filters' in conv_settings:
+          filters = conv_settings['filters']
+        kernel_size = conv_settings['kernel_size']
 
-    self.autoencoder = models.Model(input_w, decoded, name="autoencoder")
-    if self.verbose:
-      self.autoencoder.summary()
-    
-    self.autoencoder.compile(optimizer=_optimizer, loss=_loss)
+        # add the transpose convolution
+        x = layers.Conv1DTranspose(filters, kernel_size, activation="relu", padding=padding)(x)
+        
+        # upscalling if we haven't reached the input dimension just yet      
+        if output_dim*pool_size <= window_size:
+          output_dim = output_dim*pool_size
+          x = layers.UpSampling1D(pool_size)(x)
+        
+        if self.dropout is not None:
+          x = layers.Dropout(self.dropout)(x)
+
+      # Final activation layer that we use sigmoid activation because we use man mix scalling
+      x = layers.Flatten()(x)
+      x = layers.Dense(window_size, activation='sigmoid')(x)
+      decoded = layers.Reshape((window_size, 1))(x)
+
+      self.autoencoder = models.Model(input_w, decoded, name="autoencoder")
+      if self.verbose:
+        self.autoencoder.summary()
+      
+      self.autoencoder.compile(optimizer=_optimizer, loss=_loss)
 
   """ 
     fit the model to the given @X, @y, for @epochs iteration over the dataset, dividing it by @batches subsets. Also applies early training 
@@ -157,7 +162,9 @@ class TimeSeriesComplexityReducerModel():
   def evaluate(self, X, y_true):
     return self.autoencoder.evaluate(X, y_true, batch_size=64)
 
-
+  def save_solver(self, path):
+    self.encoder.save(path)
+  
 class TimeSeriesComplexityReducer:
   """ 
     Framework to solve the Complexity Reduction problem for timeseries.
@@ -270,6 +277,7 @@ class TimeSeriesComplexityReducer:
       return self.model.encode(X).reshape(-1)
     
     to_export = np.apply_along_axis(_reduce, 1, timeseries_ndarray)
+    to_export = np.round(to_export,2)
     id_nums = timeseries_ndarray.shape[0]
     
     df_export = pd.DataFrame(data=to_export)
@@ -280,8 +288,7 @@ class TimeSeriesComplexityReducer:
     # shift column 'id' to first position
     first_column = df_export.pop('id')
     
-    # insert column using insert(position,column_name,
-    # first_column) function
+    # insert column using insert(position,column_name,first_column) function
     df_export.insert(0, 'id', first_column)
         
     return df_export
@@ -289,4 +296,3 @@ class TimeSeriesComplexityReducer:
   def create_compressed_file(self,timeseries_ndarray,TIMESERIES_IDS,out_filename='test.out'):
     df_to_export = self.reduce_and_export(timeseries_ndarray,TIMESERIES_IDS)
     df_to_export.to_csv(out_filename,sep='\t',line_terminator='\r\n',header=False, index=False)
-    #savetxt(out_filename, data_to_export, delimiter='\t', newline='\r\n')

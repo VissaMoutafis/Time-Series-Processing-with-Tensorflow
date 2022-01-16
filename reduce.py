@@ -20,6 +20,8 @@ from config.reduce_config import *
 def main():
     # create the needed parser
     cmd_args = create_hyperparameter_parser(3)
+    train_mode = cmd_args.train
+    MODEL_PATH = cmd_args.model_path+'reduce'  # set model path
     n_samples = N_TRAINING_SAMPLES
     input_dataset_path = cmd_args.dataset_path
     query_dataset_path = cmd_args.query_set
@@ -42,25 +44,40 @@ def main():
     TIME_SERIES_INPUT_ID = timeseries_input_df.index.tolist()
     TIME_SERIES_QUERY_ID = timeseries_query_df.index.tolist()
 
-    # create the timeseries prediction model
-    autoencoder = TimeSeriesComplexityReducerModel(
-        LOOKBACK, 
-        CNN_LAYER_SETTINGS, 
-        latent_dim=LATENT_DIM,
-        pool_size=POOL_SIZE, 
-        dropout_rate=DROPOUT_RATE,
-        _loss=LOSS, 
-        verbose=True)
+    if train_mode:
+        # create the timeseries prediction model
+        autoencoder = TimeSeriesComplexityReducerModel(
+            LOOKBACK, 
+            CNN_LAYER_SETTINGS, 
+            latent_dim=LATENT_DIM,
+            pool_size=POOL_SIZE, 
+            dropout_rate=DROPOUT_RATE,
+            _loss=LOSS, 
+            verbose=True)
 
-    # create the problem statement
-    problem=TimeSeriesComplexityReducer(autoencoder, train_timeseries_dataset.to_numpy(), TIME_SERIES_TRAIN_ID)
-    
-    # solve the problem
-    problem.solve(epochs=EPOCHS, batch_size=BATCH_SIZE)
-    problem.plot_graphs([0])
-    
-##############################################################################################################################       
-    
+        # create the problem statement
+        problem=TimeSeriesComplexityReducer(autoencoder, train_timeseries_dataset.to_numpy(), TIME_SERIES_TRAIN_ID)
+        
+        # solve the problem
+        problem.solve(epochs=EPOCHS, batch_size=BATCH_SIZE)
+        
+        # save model for later use
+        autoencoder.save_solver(MODEL_PATH)
+    else:
+        # create the timeseries prediction model
+        autoencoder = TimeSeriesComplexityReducerModel(
+            LOOKBACK,
+            CNN_LAYER_SETTINGS,
+            latent_dim=LATENT_DIM,
+            pool_size=POOL_SIZE,
+            dropout_rate=DROPOUT_RATE,
+            _loss=LOSS,
+            trained_model_path=MODEL_PATH)
+
+        # create the problem statement
+        problem = TimeSeriesComplexityReducer(
+            autoencoder, train_timeseries_dataset.to_numpy(), TIME_SERIES_TRAIN_ID)
+
     #create compressed input data
     problem.create_compressed_file(timeseries_input_df.to_numpy(),TIME_SERIES_INPUT_ID, output_input)
     
