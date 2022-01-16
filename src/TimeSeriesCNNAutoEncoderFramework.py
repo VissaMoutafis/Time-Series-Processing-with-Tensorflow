@@ -14,12 +14,24 @@ from keras.layers.merge import concatenate
 from math import ceil
 from numpy import savetxt
 
-from utilities import *
+from src.utilities import *
 
 
 class TimeSeriesComplexityReducerModel():
   n_conv_filt_default = 10
-  def __init__(self, window_size, conv_layers_setting=[], latent_dim=3, pool_size=2, _optimizer='adam', _loss='mse', dropout_rate=None, verbose=False):
+  """ 
+    Model Wrapper for the Complexity reduction problem. Creates the model and init the necessary variables to function.
+    
+    @window_size: the look-back value
+    @conv_layers_settings: a list of dicts that will provide the conv layers with filters and kernel parameters
+    @latent_dim: the dimension that we will project all the [@window_size, 1] vectors
+    @pool_size: size of pooling filters 
+    @_optimizer: the optimizer we use to solve the problem
+    @_loss: the loss function that we trying to fit
+    @dropout_rate: the dropout rate between layers
+    @verbose: verbosity flag
+  """
+  def __init__(self, window_size, conv_layers_setting=[], latent_dim=3, pool_size=2, _optimizer='adam', _loss='bce', dropout_rate=None, verbose=False):
     self.verbose=verbose
     self.input_dim = window_size
     self.latent_dim = latent_dim 
@@ -56,20 +68,23 @@ class TimeSeriesComplexityReducerModel():
       if self.dropout is not None:
         x = layers.Dropout(self.dropout)(x)
 
-    # final compression
+    # final compression with dense layer and a relu activation
     x = layers.Flatten()(x)
     x = layers.Dense(latent_dim, activation='relu')(x)
     encoded = layers.Reshape((latent_dim, 1))(x)
     
+    # create the encoder model
     self.encoder = models.Model(input_w, encoded, name='encoder')
     if self.verbose:
       self.encoder.summary()    
 
 
-    # decoder model
+    # decoder model architecture
     output_dim = latent_dim 
-
+    
+    # use transpose convolutions to recreate the timeseries
     x = layers.Conv1DTranspose(1, latent_dim, activation='relu', padding="same")(encoded)
+    
     # up sampling
     if output_dim*pool_size <= window_size:
         output_dim = output_dim*pool_size
@@ -81,14 +96,17 @@ class TimeSeriesComplexityReducerModel():
 
     # for all conv layers provided add a reconstructor layer of the input timeseries
     for i, conv_settings in enumerate(conv_layers_setting[::-1]):
+      # parse the semantics from the layer setting given by the user
       padding="same"
       filters = self.n_conv_filt_default
       if 'filters' in conv_settings:
         filters = conv_settings['filters']
       kernel_size = conv_settings['kernel_size']
 
+      # add the transpose convolution
       x = layers.Conv1DTranspose(filters, kernel_size, activation="relu", padding=padding)(x)
       
+      # upscalling if we haven't reached the input dimension just yet      
       if output_dim*pool_size <= window_size:
         output_dim = output_dim*pool_size
         x = layers.UpSampling1D(pool_size)(x)
@@ -96,7 +114,7 @@ class TimeSeriesComplexityReducerModel():
       if self.dropout is not None:
         x = layers.Dropout(self.dropout)(x)
 
-    # decoded = layers.Conv1DTranspose(1, window_size-output_dim+1, activation="sigmoid")(x)
+    # Final activation layer that we use sigmoid activation because we use man mix scalling
     x = layers.Flatten()(x)
     x = layers.Dense(window_size, activation='sigmoid')(x)
     decoded = layers.Reshape((window_size, 1))(x)
@@ -105,9 +123,12 @@ class TimeSeriesComplexityReducerModel():
     if self.verbose:
       self.autoencoder.summary()
     
-    self.autoencoder.compile(optimizer='adam', loss='mse')
+    self.autoencoder.compile(optimizer=_optimizer, loss=_loss)
 
-
+  """ 
+    fit the model to the given @X, @y, for @epochs iteration over the dataset, dividing it by @batches subsets. Also applies early training 
+    and returns the history after fitting.
+  """
   def fit(self, X, y, epochs=50, batch_size=128):
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33)
     self.D_train = X_train, y_train
@@ -127,6 +148,9 @@ class TimeSeriesComplexityReducerModel():
   def predict(self, X):
     return self.autoencoder.predict(X)
 
+  """
+    Use the encoder model to reduce the dimensionality of the given input @X
+  """
   def encode(self, X):
     return self.encoder.predict(X)
 
@@ -135,6 +159,12 @@ class TimeSeriesComplexityReducerModel():
 
 
 class TimeSeriesComplexityReducer:
+  """ 
+    Framework to solve the Complexity Reduction problem for timeseries.
+    @model: the model that we will use to solve the model. One easy to use model is the TimeSeriesForecastModel class.
+    @dataset: the timeseries dataset of size [N x C], N = #timeseries, C = complexity of each timeseries
+    @timeseries_labels: labels of each one of them for later plotting, default will be a numeric value index 
+  """
   def __init__(self, model, dataset, timeseries_labels=None):
     self.dataset = dataset
     self.model = model
@@ -147,6 +177,11 @@ class TimeSeriesComplexityReducer:
     self.X_train_all = None
     self.y_train_all = None
 
+  """
+    Use the provided model to fit the problem for given @epochs and @batch_size. 
+    Divide the timeseries into segments and construct a total training dataset to train the model.
+    Keep some of the data per timeseries for evaluation later on.
+  """
   def solve(self, epochs=100, batch_size=128):
     self.trained = True
         
@@ -169,7 +204,9 @@ class TimeSeriesComplexityReducer:
     
     self.history = self.model.fit(self.X_train_all, self.y_train_all, epochs=epochs, batch_size=batch_size)
 
-  
+  """
+    Graph plotting for the visualization of the autoencoder functionality and performance 
+  """
   def plot_graphs(self, timeseries_idx=None):
     if not self.trained:
       raise Exception("Problem not solved")
@@ -201,6 +238,9 @@ class TimeSeriesComplexityReducer:
     plt.legend(lgnd)
     plt.show()
 
+  """ 
+    Divide the @_timeseries to segments of @window size with step of @window
+  """
   def sample_timeseries(self, _timeseries, window):
     _max = _timeseries.min()
     _min = _timeseries.max()
@@ -217,7 +257,14 @@ class TimeSeriesComplexityReducer:
 
     return X, X, _max, _min
 
+
+  """
+    Sample the timeseries and reduce the dimension
+    @timeseries_ndarray : [N x C] array with N timeseries of complexity C
+    @TIMESERIES_IDS: labels for timeseries
+  """
   def reduce_and_export(self, timeseries_ndarray, TIMESERIES_IDS):
+    # helper to reduce the complexity of a timeseries
     def _reduce(timeseries):
       X, y, _max, _min = self.sample_timeseries(timeseries, self.model.input_dim) 
       return self.model.encode(X).reshape(-1)

@@ -8,13 +8,13 @@ Writters:
 Time Series Forecasting using tensorflow lstm models.
 
 usage: 
-  ~$ python prj3_a.py [-h] [-d DATASET_PATH] [-n N_SAMPLES] [-mae ERROR_VALUE]
+  ~$ python detect.py [-h] [-d DATASET_PATH] [-n N_SAMPLES] [-mae ERROR_VALUE]
 """
 
 import pandas as pd
-from ArgParser import *
-from TimeSeriesAutoEncoderFramework import *
-from ex1_config import *
+from src.ArgParser import *
+from src.TimeSeriesAutoEncoderFramework import *
+from config.detect_config import *
 
 
 def main():
@@ -33,9 +33,9 @@ def main():
     # get the indices in a list
     TIME_SERIES_IDS = timeseries_df.index.tolist()
     # create the timeseries autoencoder model
-    model1 = LSTMAutoEncoder((LOOKBACK, 1),[100, 64,64],timeseries_df.to_numpy(),batch_size = 128, dropout=0.3)
+    model1 = LSTMAutoEncoder((LOOKBACK, 1), LSTM_LAYERS,timeseries_df.to_numpy(),batch_size = BATCH_SIZE, dropout=DROPOUT_RATE)
     # initiate adequate framework
-    model1.solve(lookback=LOOKBACK, epochs=15, batch_size = 128)
+    model1.solve(lookback=LOOKBACK, epochs=EPOCHS, batch_size = BATCH_SIZE)
     
     
     X_train_pred = model1.model.predict(model1.X_train_all)

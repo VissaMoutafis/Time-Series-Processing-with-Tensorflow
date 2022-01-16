@@ -49,7 +49,7 @@ import tensorflow as tf
 from tensorflow.keras import layers, models
 from keras.callbacks import EarlyStopping
 
-from utilities import *
+from src.utilities import *
 # input_dataset_path = 'drive/MyDrive/Project-Datasets/nasd_input.csv'
 # query_dataset_path = 'drive/MyDrive/Project-Datasets/nasd_query.csv'
 # DATASET_SIZE = 3
@@ -60,7 +60,7 @@ from utilities import *
 
 
 class LSTMAutoEncoder():
-    def __init__(self, input_dim, lstm_units, dataset, batch_size = 128, dropout=None, _optimizer='adam', _loss='mse'):
+    def __init__(self, input_dim, lstm_units, dataset, batch_size = 128, dropout=None, _optimizer='adam', _loss='mae'):
         super(LSTMAutoEncoder, self).__init__()
         self.D_train = None
         self.D_test = None
@@ -114,7 +114,7 @@ class LSTMAutoEncoder():
             self.model.add(layers.Dropout(self.dropout))
 
         # final output layer
-        self.model.add(layers.TimeDistributed(layers.Dense(units=input_dim[-1], activation="tanh")))
+        self.model.add(layers.TimeDistributed(layers.Dense(units=input_dim[-1])))#, activation="tanh")))
         
         self.model.compile(optimizer='adam', loss=self.loss)
 
@@ -156,19 +156,28 @@ class LSTMAutoEncoder():
       self.history = self.fit(self.X_train_all, self.y_train_all, epochs = epochs, batch_size = batch_size)
 
 def plot_anomalies(model,TIME_SERIES_IDS,mae = 0.5):
-  fig,axes = plt.subplots(1,len(TIME_SERIES_IDS),figsize = (30,10))
-  timeseries_idx = range(len(TIME_SERIES_IDS))
+  if len(TIME_SERIES_IDS)%2 != 0:
+    _rows = int(len(TIME_SERIES_IDS[6:12])/2) + 1
+  else:
+    _rows = int(len(TIME_SERIES_IDS[6:12])/2)
+  _cols = 2  
+  fig,axes = plt.subplots(_rows,_cols,constrained_layout = True)
+  timeseries_idx = range(len(TIME_SERIES_IDS[6:12]))
+  row = 0
+  column = 0
+  
   for i in timeseries_idx:
     X_test, y_test = model.eval_data[i]
     X_test_pred = model.model.predict(X_test)
     test_mae_loss = np.mean(np.abs(X_test_pred - X_test), axis=1)
-    # in the last commit for threshold 3 we had double the anomalies. We used to have threshold 5. Now for 5 we only have 1 anomaly
+    
     THRESHOLD = mae
     test_score_df = pd.DataFrame()
     test_score_df['loss'] = test_mae_loss.flatten()
     test_score_df['threshold'] = THRESHOLD
     test_score_df['anomaly'] = test_score_df.loss > THRESHOLD
     test_score_df['close'] = X_test[:,1]
+    
     #check if we are tresholding right
     #plt.plot(test_score_df.index, test_score_df.loss, label='loss')
     #plt.plot(test_score_df.index, test_score_df.threshold, label='threshold')
@@ -179,18 +188,29 @@ def plot_anomalies(model,TIME_SERIES_IDS,mae = 0.5):
     anomaly =  np.array(anomalies.close)
 
     test_score_df_close_new =  np.array(test_score_df.close)
-    plt.rcParams['figure.figsize'] = [30, 10]
-    axes[i].plot(
+    
+    if column == 2:
+      row += 1
+      column = 0
+      if row == _rows:
+        break
+    
+    #plt.rcParams['figure.figsize'] = [16,6]
+    axes[row,column].plot(
       test_score_df.index, 
       reverse_standardize(test_score_df_close_new,model.mean[i], model.sigma[i]).flatten(),
       label='stock real price'
     );
-    axes[i].scatter(anomalies.index,
+    axes[row,column].scatter(anomalies.index,
                     reverse_standardize(anomaly,model.mean[i], model.sigma[i]).flatten(),
                     color=sns.color_palette()[3],
                     s=52,
                     label='anomaly')
-    axes[i].title.set_text('Stock Price vs Anomalies for timeseries:')
+    title = 'Stock Price vs Anomalies for stock_id:' + TIME_SERIES_IDS[i]
+    axes[row,column].title.set_text(title)
+    
+    column += 1
+    
   plt.xticks(rotation=25)
   plt.legend()
   plt.show()

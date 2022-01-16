@@ -8,13 +8,13 @@ Writters:
 Time Series Forecasting using tensorflow lstm models.
 
 usage: 
-  ~$ python prj3_c.py [-h] [-d DATASET_PATH] [-q QUERY_PATH] [-od OUTPUT_DATASET_PATH] [-q QUERY_PATH] 
+  ~$ python reduce.py [-h] [-d DATASET_PATH] [-q QUERY_PATH] [-od OUTPUT_DATASET_PATH] [-q QUERY_PATH] 
 """
 import pandas as pd
 from scipy.sparse import data
-from ArgParser import *
-from TimeSeriesCNNAutoEncoderFramework import *
-from ex3_config import *
+from src.ArgParser import *
+from src.TimeSeriesCNNAutoEncoderFramework import *
+from config.reduce_config import *
 
 
 def main():
@@ -48,7 +48,8 @@ def main():
         CNN_LAYER_SETTINGS, 
         latent_dim=LATENT_DIM,
         pool_size=POOL_SIZE, 
-        dropout_rate=DROPOUT_RATE, 
+        dropout_rate=DROPOUT_RATE,
+        _loss=LOSS, 
         verbose=True)
 
     # create the problem statement
@@ -56,8 +57,6 @@ def main():
     
     # solve the problem
     problem.solve(epochs=EPOCHS, batch_size=BATCH_SIZE)
-    
-    problem.plot_graphs([0])
 ##############################################################################################################################       
     
     #create compressed input data
