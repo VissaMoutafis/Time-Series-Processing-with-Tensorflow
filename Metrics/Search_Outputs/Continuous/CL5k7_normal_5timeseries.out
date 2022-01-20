@@ -1,0 +1,43 @@
+Query: a
+Algorithm: LSH_Frechet_Continuous
+Aproximate Nearest neighbour-1: a
+True Nearest neighbour-2: a
+distanceAproximate: 1.20538
+distanceTrue: 1.20538
+
+Query: aa
+Algorithm: LSH_Frechet_Continuous
+Aproximate Nearest neighbour-1: aa
+True Nearest neighbour-2: aa
+distanceAproximate: 1.87663
+distanceTrue: 1.87663
+
+Query: aaba
+Algorithm: LSH_Frechet_Continuous
+Aproximate Nearest neighbour-1: aaba
+True Nearest neighbour-2: aaba
+distanceAproximate: 1.35207
+distanceTrue: 1.35207
+
+Query: aapl
+Algorithm: LSH_Frechet_Continuous
+Aproximate Nearest neighbour-1: aapl
+True Nearest neighbour-2: aapl
+distanceAproximate: 1.001
+distanceTrue: 1.001
+
+Query: abc
+Algorithm: LSH_Frechet_Continuous
+Aproximate Nearest neighbour-1: abc
+True Nearest neighbour-2: abc
+distanceAproximate: 1.14466
+distanceTrue: 1.14466
+
+tApproximateAverage: 125132ms
+tTrueAverage: 434263ms
+MAF: 1
+
+Total Stats: 
+Average per point accuracy: 1
+Average brute_KNN/approx_KNN time ratio: 4.1001
+Average approx_KNN dist / true_KNN dist error: 0

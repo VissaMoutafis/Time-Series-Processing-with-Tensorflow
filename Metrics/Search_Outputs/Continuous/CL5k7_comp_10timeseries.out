@@ -1,0 +1,78 @@
+Query: a
+Algorithm: LSH_Frechet_Continuous
+Aproximate Nearest neighbour-1: a
+True Nearest neighbour-2: a
+distanceAproximate: 1
+distanceTrue: 1
+
+Query: aa
+Algorithm: LSH_Frechet_Continuous
+Aproximate Nearest neighbour-1: aa
+True Nearest neighbour-2: aa
+distanceAproximate: 1.06626
+distanceTrue: 1.06626
+
+Query: aaba
+Algorithm: LSH_Frechet_Continuous
+Aproximate Nearest neighbour-1: aaba
+True Nearest neighbour-2: aaba
+distanceAproximate: 1
+distanceTrue: 1
+
+Query: aapl
+Algorithm: LSH_Frechet_Continuous
+Aproximate Nearest neighbour-1: aapl
+True Nearest neighbour-2: aapl
+distanceAproximate: 1
+distanceTrue: 1
+
+Query: abc
+Algorithm: LSH_Frechet_Continuous
+Aproximate Nearest neighbour-1: abc
+True Nearest neighbour-2: abc
+distanceAproximate: 1
+distanceTrue: 1
+
+Query: abt
+Algorithm: LSH_Frechet_Continuous
+Aproximate Nearest neighbour-1: abt
+True Nearest neighbour-2: abt
+distanceAproximate: 1
+distanceTrue: 1
+
+Query: abx
+Algorithm: LSH_Frechet_Continuous
+Aproximate Nearest neighbour-1: abx
+True Nearest neighbour-2: abx
+distanceAproximate: 1.00319
+distanceTrue: 1.00319
+
+Query: adbe
+Algorithm: LSH_Frechet_Continuous
+Aproximate Nearest neighbour-1: adbe
+True Nearest neighbour-2: adbe
+distanceAproximate: 1
+distanceTrue: 1
+
+Query: adi
+Algorithm: LSH_Frechet_Continuous
+Aproximate Nearest neighbour-1: adi
+True Nearest neighbour-2: adi
+distanceAproximate: 1.0018
+distanceTrue: 1.0018
+
+Query: adm
+Algorithm: LSH_Frechet_Continuous
+Aproximate Nearest neighbour-1: adm
+True Nearest neighbour-2: adm
+distanceAproximate: 1
+distanceTrue: 1
+
+tApproximateAverage: 450166ms
+tTrueAverage: 144978ms
+MAF: 1
+
+Total Stats: 
+Average per point accuracy: 1
+Average brute_KNN/approx_KNN time ratio: 0.320779
+Average approx_KNN dist / true_KNN dist error: 0

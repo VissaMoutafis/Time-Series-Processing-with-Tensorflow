@@ -1,0 +1,428 @@
+Query: a
+Algorithm: LSH_Frechet_Discrete
+Aproximate Nearest neighbour-1: a
+True Nearest neighbour-2: a
+distanceAproximate: 0
+distanceTrue: 0
+
+Query: aa
+Algorithm: LSH_Frechet_Discrete
+Aproximate Nearest neighbour-1: aa
+True Nearest neighbour-2: aa
+distanceAproximate: 0
+distanceTrue: 0
+
+Query: aaba
+Algorithm: LSH_Frechet_Discrete
+Aproximate Nearest neighbour-1: aaba
+True Nearest neighbour-2: aaba
+distanceAproximate: 0
+distanceTrue: 0
+
+Query: aapl
+Algorithm: LSH_Frechet_Discrete
+Aproximate Nearest neighbour-1: aapl
+True Nearest neighbour-2: aapl
+distanceAproximate: 0
+distanceTrue: 0
+
+Query: abc
+Algorithm: LSH_Frechet_Discrete
+Aproximate Nearest neighbour-1: abc
+True Nearest neighbour-2: abc
+distanceAproximate: 0
+distanceTrue: 0
+
+Query: abt
+Algorithm: LSH_Frechet_Discrete
+Aproximate Nearest neighbour-1: abt
+True Nearest neighbour-2: abt
+distanceAproximate: 0
+distanceTrue: 0
+
+Query: abx
+Algorithm: LSH_Frechet_Discrete
+Aproximate Nearest neighbour-1: abx
+True Nearest neighbour-2: abx
+distanceAproximate: 0
+distanceTrue: 0
+
+Query: adbe
+Algorithm: LSH_Frechet_Discrete
+Aproximate Nearest neighbour-1: adbe
+True Nearest neighbour-2: adbe
+distanceAproximate: 0
+distanceTrue: 0
+
+Query: adi
+Algorithm: LSH_Frechet_Discrete
+Aproximate Nearest neighbour-1: adi
+True Nearest neighbour-2: adi
+distanceAproximate: 0
+distanceTrue: 0
+
+Query: adm
+Algorithm: LSH_Frechet_Discrete
+Aproximate Nearest neighbour-1: adm
+True Nearest neighbour-2: adm
+distanceAproximate: 0
+distanceTrue: 0
+
+Query: admp
+Algorithm: LSH_Frechet_Discrete
+Aproximate Nearest neighbour-1: admp
+True Nearest neighbour-2: admp
+distanceAproximate: 0
+distanceTrue: 0
+
+Query: adp
+Algorithm: LSH_Frechet_Discrete
+Aproximate Nearest neighbour-1: adp
+True Nearest neighbour-2: adp
+distanceAproximate: 0
+distanceTrue: 0
+
+Query: adsk
+Algorithm: LSH_Frechet_Discrete
+Aproximate Nearest neighbour-1: adsk
+True Nearest neighbour-2: adsk
+distanceAproximate: 0
+distanceTrue: 0
+
+Query: aee
+Algorithm: LSH_Frechet_Discrete
+Aproximate Nearest neighbour-1: aee
+True Nearest neighbour-2: aee
+distanceAproximate: 0
+distanceTrue: 0
+
+Query: aem
+Algorithm: LSH_Frechet_Discrete
+Aproximate Nearest neighbour-1: aem
+True Nearest neighbour-2: aem
+distanceAproximate: 0
+distanceTrue: 0
+
+Query: aep
+Algorithm: LSH_Frechet_Discrete
+Aproximate Nearest neighbour-1: aep
+True Nearest neighbour-2: aep
+distanceAproximate: 0
+distanceTrue: 0
+
+Query: aes
+Algorithm: LSH_Frechet_Discrete
+Aproximate Nearest neighbour-1: aes
+True Nearest neighbour-2: aes
+distanceAproximate: 0
+distanceTrue: 0
+
+Query: aet
+Algorithm: LSH_Frechet_Discrete
+Aproximate Nearest neighbour-1: aet
+True Nearest neighbour-2: aet
+distanceAproximate: 0
+distanceTrue: 0
+
+Query: afl
+Algorithm: LSH_Frechet_Discrete
+Aproximate Nearest neighbour-1: afl
+True Nearest neighbour-2: afl
+distanceAproximate: 0
+distanceTrue: 0
+
+Query: agn
+Algorithm: LSH_Frechet_Discrete
+Aproximate Nearest neighbour-1: agn
+True Nearest neighbour-2: agn
+distanceAproximate: 0
+distanceTrue: 0
+
+Query: aig
+Algorithm: LSH_Frechet_Discrete
+Aproximate Nearest neighbour-1: aig
+True Nearest neighbour-2: aig
+distanceAproximate: 0
+distanceTrue: 0
+
+Query: aiv
+Algorithm: LSH_Frechet_Discrete
+Aproximate Nearest neighbour-1: aiv
+True Nearest neighbour-2: aiv
+distanceAproximate: 0
+distanceTrue: 0
+
+Query: all
+Algorithm: LSH_Frechet_Discrete
+Aproximate Nearest neighbour-1: all
+True Nearest neighbour-2: all
+distanceAproximate: 0
+distanceTrue: 0
+
+Query: amat
+Algorithm: LSH_Frechet_Discrete
+Aproximate Nearest neighbour-1: amat
+True Nearest neighbour-2: amat
+distanceAproximate: 0
+distanceTrue: 0
+
+Query: amd
+Algorithm: LSH_Frechet_Discrete
+Aproximate Nearest neighbour-1: amd
+True Nearest neighbour-2: amd
+distanceAproximate: 0
+distanceTrue: 0
+
+Query: amgn
+Algorithm: LSH_Frechet_Discrete
+Aproximate Nearest neighbour-1: amgn
+True Nearest neighbour-2: amgn
+distanceAproximate: 0
+distanceTrue: 0
+
+Query: amzn
+Algorithm: LSH_Frechet_Discrete
+Aproximate Nearest neighbour-1: amzn
+True Nearest neighbour-2: amzn
+distanceAproximate: 0
+distanceTrue: 0
+
+Query: an
+Algorithm: LSH_Frechet_Discrete
+Aproximate Nearest neighbour-1: an
+True Nearest neighbour-2: an
+distanceAproximate: 0
+distanceTrue: 0
+
+Query: antm
+Algorithm: LSH_Frechet_Discrete
+Aproximate Nearest neighbour-1: antm
+True Nearest neighbour-2: antm
+distanceAproximate: 0
+distanceTrue: 0
+
+Query: apa
+Algorithm: LSH_Frechet_Discrete
+Aproximate Nearest neighbour-1: apa
+True Nearest neighbour-2: apa
+distanceAproximate: 0
+distanceTrue: 0
+
+Query: apc
+Algorithm: LSH_Frechet_Discrete
+Aproximate Nearest neighbour-1: apc
+True Nearest neighbour-2: apc
+distanceAproximate: 0
+distanceTrue: 0
+
+Query: apd
+Algorithm: LSH_Frechet_Discrete
+Aproximate Nearest neighbour-1: apd
+True Nearest neighbour-2: apd
+distanceAproximate: 0
+distanceTrue: 0
+
+Query: aphb
+Algorithm: LSH_Frechet_Discrete
+Aproximate Nearest neighbour-1: aphb
+True Nearest neighbour-2: aphb
+distanceAproximate: 0
+distanceTrue: 0
+
+Query: ash
+Algorithm: LSH_Frechet_Discrete
+Aproximate Nearest neighbour-1: ash
+True Nearest neighbour-2: ash
+distanceAproximate: 0
+distanceTrue: 0
+
+Query: ati
+Algorithm: LSH_Frechet_Discrete
+Aproximate Nearest neighbour-1: ati
+True Nearest neighbour-2: ati
+distanceAproximate: 0
+distanceTrue: 0
+
+Query: atro
+Algorithm: LSH_Frechet_Discrete
+Aproximate Nearest neighbour-1: atro
+True Nearest neighbour-2: atro
+distanceAproximate: 0
+distanceTrue: 0
+
+Query: au
+Algorithm: LSH_Frechet_Discrete
+Aproximate Nearest neighbour-1: au
+True Nearest neighbour-2: au
+distanceAproximate: 0
+distanceTrue: 0
+
+Query: avp
+Algorithm: LSH_Frechet_Discrete
+Aproximate Nearest neighbour-1: avp
+True Nearest neighbour-2: avp
+distanceAproximate: 0
+distanceTrue: 0
+
+Query: avy
+Algorithm: LSH_Frechet_Discrete
+Aproximate Nearest neighbour-1: avy
+True Nearest neighbour-2: avy
+distanceAproximate: 0
+distanceTrue: 0
+
+Query: axgn
+Algorithm: LSH_Frechet_Discrete
+Aproximate Nearest neighbour-1: axgn
+True Nearest neighbour-2: axgn
+distanceAproximate: 0
+distanceTrue: 0
+
+Query: axp
+Algorithm: LSH_Frechet_Discrete
+Aproximate Nearest neighbour-1: axp
+True Nearest neighbour-2: axp
+distanceAproximate: 0
+distanceTrue: 0
+
+Query: azo
+Algorithm: LSH_Frechet_Discrete
+Aproximate Nearest neighbour-1: azo
+True Nearest neighbour-2: azo
+distanceAproximate: 0
+distanceTrue: 0
+
+Query: ba
+Algorithm: LSH_Frechet_Discrete
+Aproximate Nearest neighbour-1: ba
+True Nearest neighbour-2: ba
+distanceAproximate: 0
+distanceTrue: 0
+
+Query: bac
+Algorithm: LSH_Frechet_Discrete
+Aproximate Nearest neighbour-1: bac
+True Nearest neighbour-2: bac
+distanceAproximate: 0
+distanceTrue: 0
+
+Query: bax
+Algorithm: LSH_Frechet_Discrete
+Aproximate Nearest neighbour-1: bax
+True Nearest neighbour-2: bax
+distanceAproximate: 0
+distanceTrue: 0
+
+Query: bb
+Algorithm: LSH_Frechet_Discrete
+Aproximate Nearest neighbour-1: bb
+True Nearest neighbour-2: bb
+distanceAproximate: 0
+distanceTrue: 0
+
+Query: bbby
+Algorithm: LSH_Frechet_Discrete
+Aproximate Nearest neighbour-1: bbby
+True Nearest neighbour-2: bbby
+distanceAproximate: 0
+distanceTrue: 0
+
+Query: bbt
+Algorithm: LSH_Frechet_Discrete
+Aproximate Nearest neighbour-1: bbt
+True Nearest neighbour-2: bbt
+distanceAproximate: 0
+distanceTrue: 0
+
+Query: bby
+Algorithm: LSH_Frechet_Discrete
+Aproximate Nearest neighbour-1: bby
+True Nearest neighbour-2: bby
+distanceAproximate: 0
+distanceTrue: 0
+
+Query: bc
+Algorithm: LSH_Frechet_Discrete
+Aproximate Nearest neighbour-1: bc
+True Nearest neighbour-2: bc
+distanceAproximate: 0
+distanceTrue: 0
+
+Query: bcr
+Algorithm: LSH_Frechet_Discrete
+Aproximate Nearest neighbour-1: bcr
+True Nearest neighbour-2: bcr
+distanceAproximate: 0
+distanceTrue: 0
+
+Query: bdx
+Algorithm: LSH_Frechet_Discrete
+Aproximate Nearest neighbour-1: bdx
+True Nearest neighbour-2: bdx
+distanceAproximate: 0
+distanceTrue: 0
+
+Query: ben
+Algorithm: LSH_Frechet_Discrete
+Aproximate Nearest neighbour-1: ben
+True Nearest neighbour-2: ben
+distanceAproximate: 0
+distanceTrue: 0
+
+Query: biib
+Algorithm: LSH_Frechet_Discrete
+Aproximate Nearest neighbour-1: biib
+True Nearest neighbour-2: biib
+distanceAproximate: 0
+distanceTrue: 0
+
+Query: bk
+Algorithm: LSH_Frechet_Discrete
+Aproximate Nearest neighbour-1: bk
+True Nearest neighbour-2: bk
+distanceAproximate: 0
+distanceTrue: 0
+
+Query: bll
+Algorithm: LSH_Frechet_Discrete
+Aproximate Nearest neighbour-1: bll
+True Nearest neighbour-2: bll
+distanceAproximate: 0
+distanceTrue: 0
+
+Query: bms
+Algorithm: LSH_Frechet_Discrete
+Aproximate Nearest neighbour-1: bms
+True Nearest neighbour-2: bms
+distanceAproximate: 0
+distanceTrue: 0
+
+Query: bmy
+Algorithm: LSH_Frechet_Discrete
+Aproximate Nearest neighbour-1: bmy
+True Nearest neighbour-2: bmy
+distanceAproximate: 0
+distanceTrue: 0
+
+Query: brk-a
+Algorithm: LSH_Frechet_Discrete
+Aproximate Nearest neighbour-1: brk-a
+True Nearest neighbour-2: brk-a
+distanceAproximate: 0
+distanceTrue: 0
+
+Query: brk-b
+Algorithm: LSH_Frechet_Discrete
+Aproximate Nearest neighbour-1: brk-b
+True Nearest neighbour-2: brk-b
+distanceAproximate: 0
+distanceTrue: 0
+
+tApproximateAverage: 11200.9ms
+tTrueAverage: 3661.87ms
+MAF: -1
+
+Total Stats: 
+Average per point accuracy: 1
+Average brute_KNN/approx_KNN time ratio: 0.326962
+Average approx_KNN dist / true_KNN dist error: -nan
