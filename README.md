@@ -15,6 +15,10 @@ In the root directory there are 3 python files that implement the tasks at hand.
 - `--train` for setting the train mode on
 - `--model-path` in case we want to save/load the model in/from some other path, instead of the root directory
 
+## Configuration Files
+Each and every program will get its own `*_cofig.py` file that will contain, definitiions for parameters. The user is welcome to expreriment and change the default values of the paremeters. Those parameteers are used during training and visualization routines. 
+
+
 ## Time Series Forecasting with LSTMs
 In order to use the forecast routine:
 ```bash
